@@ -961,19 +961,38 @@ parentViewController:(UIViewController*)parentViewController
 // builds the green box and red line
 //-------------------------------------------------------------------------
 - (UIImage*)buildReticleImage {
-      rect = CGRect(origin: CGPoint(), size: CGSize(width: size.width * scale, height: size.height * scale))
-           UIGraphicsBeginImageContextWithOptions(rect.size, false, scale)
+     UIImage* result;
+    UIGraphicsBeginImageContext(CGSizeMake(RETICLE_SIZE, RETICLE_SIZE));
+    CGContextRef context = UIGraphicsGetCurrentContext();
 
-           UIColor.clear.setFill()
-           UIRectFill(rect)
-           path.addClip()
-           draw(in: rect)
+    if (self.processor.is1D) {
+        UIColor* color = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:RETICLE_ALPHA];
+        CGContextSetStrokeColorWithColor(context, color.CGColor);
+        CGContextSetLineWidth(context, RETICLE_WIDTH);
+        CGContextBeginPath(context);
+        CGFloat lineOffset = (CGFloat) (RETICLE_OFFSET+(0.5*RETICLE_WIDTH));
+        CGContextMoveToPoint(context, lineOffset, RETICLE_SIZE/2);
+        CGContextAddLineToPoint(context, RETICLE_SIZE-lineOffset, (CGFloat) (0.5*RETICLE_SIZE));
+        CGContextStrokePath(context);
+    }
 
-           let image = UIGraphicsGetImageFromCurrentImageContext()
-           UIGraphicsEndImageContext()
+    if (self.processor.is2D) {
+        UIColor* color = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:RETICLE_ALPHA];
+        CGContextSetStrokeColorWithColor(context, color.CGColor);
+        CGContextSetLineWidth(context, RETICLE_WIDTH);
+        CGContextStrokeRect(context,
+                            CGRectMake(
+                                       RETICLE_OFFSET,
+                                       RETICLE_OFFSET,
+                                       RETICLE_SIZE-2*RETICLE_OFFSET,
+                                       RETICLE_SIZE-2*RETICLE_OFFSET
+                                       )
+                            );
+    }
 
-            croppedImage = image?.cgImage?.cropping(to: CGRect(x: path.bounds.origin.x * scale, y: path.bounds.origin.y * scale, width: path.bounds.size.width * scale, height: path.bounds.size.height * scale)) else { return nil }
-    return UIImage(cgImage: croppedImage, scale: scale, orientation: imageOrientation);
+    result = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return result;
 }
 
 #pragma mark CDVBarcodeScannerOrientationDelegate
