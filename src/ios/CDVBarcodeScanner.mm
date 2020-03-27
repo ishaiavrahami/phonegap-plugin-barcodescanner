@@ -953,7 +953,7 @@ parentViewController:(UIViewController*)parentViewController
 //--------------------------------------------------------------------------
 
 #define RETICLE_SIZE    500.0f
-#define RETICLE_WIDTH    10.0f
+#define RETICLE_WIDTH    5.0f
 #define RETICLE_OFFSET   60.0f
 #define RETICLE_ALPHA     0.4f
 
